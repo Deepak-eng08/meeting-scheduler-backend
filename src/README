@@ -1,0 +1,185 @@
+# Meeting Scheduler Backend
+
+A backend service built using Node.js, Express, Sequelize, and MySQL that allows users to schedule meetings while preventing overlapping time slots.
+
+---
+
+## Tech Stack
+
+- Node.js
+- Express.js
+- Sequelize ORM
+- MySQL
+- JavaScript
+
+---
+
+## Setup Instructions
+
+### 1. Clone Repository
+
+git clone <repository_url>
+cd meeting-scheduler-backend
+
+---
+
+### 2. Install Dependencies
+
+npm install
+
+---
+
+### 3. Database Setup
+
+Open MySQL and create database:
+
+CREATE DATABASE meeting_db;
+
+Update database credentials inside:
+
+src/config/database.js
+
+Example:
+
+new Sequelize("meeting_db", "root", "your_password", {
+  host: "localhost",
+  dialect: "mysql",
+});
+
+---
+
+### 4. Run Project
+
+npm run dev
+
+Server will run on:
+
+http://localhost:3000
+
+---
+
+## Folder Structure
+
+src/
+ ├── config/       
+ ├── modules/
+ │     ├── user/
+ │     │     ├── index/
+ │     │     ├── service/
+ │     │     ├── module/
+ │     │     ├── dto/
+ │     └── meeting/
+ │           ├── index/
+ │           ├── service/
+ │           ├── module/
+ │           ├── dto/
+ ├── routes/
+ ├── utils/
+ └── app.js
+
+---
+
+## Database Design
+
+### Users Table
+
+| Column | Type |
+|--------|------|
+| id | Integer (PK) |
+| name | String |
+| email | String (Unique) |
+
+### Meetings Table
+
+| Column | Type |
+|--------|------|
+| id | Integer (PK) |
+| title | String |
+| userId | Integer (FK) |
+| startTime | DateTime |
+| endTime | DateTime |
+
+---
+
+## Business Rules
+
+No overlapping meetings allowed.
+
+Conflict condition:
+
+existing.startTime < new.endTime  
+AND  
+existing.endTime > new.startTime  
+
+If conflict exists:
+
+400 Bad Request  
+"Time slot already booked"
+
+Conflict logic implemented inside service layer.
+
+---
+
+## API Documentation
+
+### Create User
+
+POST /users
+
+Request:
+
+{
+  "name": "Deepak",
+  "email": "deepak@gmail.com"
+}
+
+---
+
+### Get User
+
+GET /users/:id
+
+---
+
+### Create Meeting
+
+POST /meetings
+
+Request:
+
+{
+  "title": "Team Meeting",
+  "userId": 1,
+  "startTime": "2026-02-24T10:00:00",
+  "endTime": "2026-02-24T11:00:00"
+}
+
+---
+
+### List Meetings
+
+GET /meetings
+
+Optional filters:
+
+GET /meetings?userId=1  
+GET /meetings?start=2026-02-24T00:00:00&end=2026-02-25T00:00:00
+
+---
+
+### Get Meeting
+
+GET /meetings/:id
+
+---
+
+### Update Meeting
+
+PUT /meetings/:id
+
+---
+
+### Delete Meeting
+
+DELETE /meetings/:id
+
